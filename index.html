@@ -17,7 +17,7 @@
   --shadow:0 10px 28px rgba(36,46,38,.10);
 }
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]):not([data-app-theme="light"]):not([data-app-theme="flower"]){
+  :root:not([data-theme="light"]):not([data-app-theme="light"]):not([data-app-theme="forest"]){
     --bg:#141915; --surface:#1D241F; --surface2:#242C26;
     --ink:#E4EAE1; --muted:#96A399; --line:#333D35;
     --accent:#71B983; --accent-soft:#27382C; --accent-ink:#10150F;
@@ -28,7 +28,7 @@
     --shadow:0 10px 28px rgba(0,0,0,.35);
   }
 }
-:root[data-theme="dark"]:not([data-app-theme="light"]):not([data-app-theme="flower"]),
+:root[data-theme="dark"]:not([data-app-theme="light"]):not([data-app-theme="forest"]),
 :root[data-app-theme="dark"]{
   --bg:#141915; --surface:#1D241F; --surface2:#242C26;
   --ink:#E4EAE1; --muted:#96A399; --line:#333D35;
@@ -39,15 +39,15 @@
   --hatch:rgba(228,234,225,.07);
   --shadow:0 10px 28px rgba(0,0,0,.35);
 }
-:root[data-app-theme="flower"]{
-  --bg:#FBF1F3; --surface:#FFFFFF; --surface2:#F8E8EC;
-  --ink:#3A2A31; --muted:#8A6E78; --line:#EFD6DC;
-  --accent:#C2527A; --accent-soft:#F5D9E2; --accent-ink:#FFFFFF;
-  --hi:#C9403C; --hi-bg:#FAE7E4;
-  --md:#C98F06; --md-bg:#FAF0DA;
-  --lo:#3F9142; --lo-bg:#E6F2E6;
-  --hatch:rgba(58,42,49,.07);
-  --shadow:0 10px 28px rgba(120,60,80,.13);
+:root[data-app-theme="forest"]{
+  --bg:#E3EDDC; --surface:#FCFDFA; --surface2:#E8F0E0;
+  --ink:#1F2B21; --muted:#5F7261; --line:#C8D8C0;
+  --accent:#2F6B3C; --accent-soft:#D8E8D4; --accent-ink:#FFFFFF;
+  --hi:#C9403C; --hi-bg:#F7E7E3;
+  --md:#C98F06; --md-bg:#F6EFD8;
+  --lo:#3F9142; --lo-bg:#E2F0E1;
+  --hatch:rgba(31,43,33,.08);
+  --shadow:0 10px 28px rgba(31,43,33,.14);
 }
 
 *{box-sizing:border-box}
@@ -64,8 +64,8 @@ input,select,textarea{font:inherit; color:var(--ink)}
 :focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:4px}
 
 .wrap{max-width:1180px; margin:0 auto}
-.garland{display:none; height:40px; margin:-6px 0 12px; background-repeat:repeat-x; background-size:auto 40px}
-:root[data-app-theme="flower"] .garland{display:block}
+.garland{display:none; height:44px; margin:-6px 0 12px; background-repeat:repeat-x; background-size:auto 44px}
+:root[data-app-theme="forest"] .garland{display:block}
 
 /* ---------- header ---------- */
 header.top{
@@ -81,7 +81,7 @@ header.top{
   font-family:'Gowun Batang',serif; font-weight:700; font-size:30px;
   margin:2px 0 0; line-height:1.2; text-wrap:balance;
 }
-:root[data-app-theme="flower"] .brand h1::after{content:" 🌸"}
+:root[data-app-theme="forest"] .brand h1::after{content:" 🌿"}
 .ownerwrap{display:flex; align-items:baseline; gap:4px}
 .ownerwrap input{
   width:9ch; border:none; border-bottom:1.5px dashed var(--line); background:none;
@@ -225,6 +225,22 @@ header.top{
 .fixedbox .fxchips{display:none; flex-direction:column; gap:8px; margin-top:8px}
 .fixedbox.open .fxchips{display:flex}
 @media (prefers-reduced-motion:reduce){ .fixedbox .fxhead .arrow{transition:none} }
+
+/* ---------- week strip ---------- */
+.weekstrip{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:12px}
+.wcell{
+  border:1px solid var(--line); border-radius:9px; background:var(--surface);
+  padding:6px 2px 7px; display:flex; flex-direction:column; align-items:center; gap:2px;
+  font-size:11px; color:var(--muted);
+}
+.wcell:hover{border-color:var(--accent)}
+.wcell .wnum{font-size:14px; font-weight:700; color:var(--ink); font-family:'IBM Plex Mono',monospace}
+.wcell .wh{font-family:'IBM Plex Mono',monospace; font-size:10.5px; min-height:14px}
+.wcell .sdot{margin:3px 0 1px}
+.wcell .wdash{color:var(--line); margin:1px 0; line-height:11px}
+.wcell.sel{background:var(--accent-soft); border-color:var(--accent)}
+.wcell.tod{box-shadow:inset 0 0 0 1px var(--accent); border-color:var(--accent)}
+.wcell.tod .wnum{color:var(--accent)}
 
 /* ---------- plant card ---------- */
 .plantcard{
@@ -459,6 +475,14 @@ header.top{
 .addloc{display:flex; gap:7px; margin-top:10px}
 .addloc input{flex:1}
 
+/* day presets */
+.prow{display:flex; align-items:center; gap:8px; padding:7px 2px; border-bottom:1px solid var(--surface2)}
+.prow .pinfo{flex:1; min-width:0}
+.prow .pname{font-weight:700; font-size:13px; word-break:break-all}
+.prow .pmeta2{font-size:11.5px; color:var(--muted)}
+.prow .pdel{width:24px; height:24px; border-radius:6px; border:1px solid var(--line); background:var(--surface); font-size:12px; line-height:1}
+.prow .pdel:hover{border-color:var(--hi); color:var(--hi)}
+
 /* weekly report */
 .rpt table{width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:12px}
 .rpt th,.rpt td{text-align:left; padding:5px 7px; border-bottom:1px solid var(--surface2)}
@@ -481,7 +505,9 @@ footer.credit{margin-top:26px; text-align:center; font-size:11.5px; color:var(--
 <script>
 try{
   var _s = JSON.parse(localStorage.getItem('sylab.scheduler.v1') || '{}');
-  if(_s && _s.theme) document.documentElement.setAttribute('data-app-theme', _s.theme);
+  var _t = _s && _s.theme;
+  if(_t === 'flower') _t = 'forest';
+  if(_t) document.documentElement.setAttribute('data-app-theme', _t);
 }catch(e){}
 </script>
 <div class="wrap">
@@ -503,7 +529,7 @@ try{
       <div class="themeseg" role="group" aria-label="테마 선택">
         <button data-t="light" title="라이트 테마" aria-pressed="false">☀️</button>
         <button data-t="dark" title="다크 테마" aria-pressed="false">🌙</button>
-        <button data-t="flower" title="꽃 테마" aria-pressed="false">🌸</button>
+        <button data-t="forest" title="숲 테마" aria-pressed="false">🌿</button>
       </div>
       <div class="menuwrap">
         <button id="menuBtn" aria-expanded="false">🗂 보관함</button>
@@ -586,6 +612,7 @@ try{
 
   <!-- ============ main ============ -->
   <main>
+    <div class="weekstrip" id="weekStrip" aria-label="주간 미리보기"></div>
     <section class="card plantcard" aria-live="polite">
       <div class="art">
         <svg class="plant s1" id="plantSvg" viewBox="0 0 200 180" role="img" aria-label="오늘의 식물 상태">
@@ -656,6 +683,7 @@ try{
       <div class="tl-head">
         <h2>타임라인</h2>
         <div class="rightside">
+          <button class="btn ghost small" id="presetBtn">📋 프리셋</button>
           <button class="btn ghost small" id="autoBtn">⚙ 자동 배치</button>
           <div class="legend">
             <span class="k-hi"><i></i>상</span>
@@ -674,8 +702,11 @@ try{
   </main>
 </div>
 
-<footer class="credit">하루 전업 시간 8시간 이하면 싱싱 🌱 · 8–12시간이면 살짝 시듦 · 12시간 이상이면 완전히 시듦 🥀</footer>
+<footer class="credit">하루 전업 시간 8시간 이하면 싱싱 🌱 · 8–12시간이면 살짝 시듦 · 12시간 이상이면 완전히 시듦 🥀<br>
+빈 타임라인을 끌면 일회성 블록을 바로 만들 수 있어요 · 단축키: ← / → 날짜 이동 · T 오늘 · N 새 업무</footer>
 </div>
+
+<input type="file" id="importFile" accept="application/json,.json" style="display:none" aria-hidden="true">
 
 <!-- ============ dialogs ============ -->
 <div class="overlay" id="overlay">
@@ -766,11 +797,13 @@ function normalize(){
   S.lastAskDay = S.lastAskDay || '';
   S.lastReport = S.lastReport || null;
   if(!S.weekStart) S.weekStart = todayKey();
+  if(S.theme === 'flower') S.theme = 'forest';
   if(!S.theme){
     var dark = false;
     try{ dark = window.matchMedia('(prefers-color-scheme: dark)').matches; }catch(e){}
     S.theme = dark ? 'dark' : 'light';
   }
+  S.presets = S.presets || [];
   S.fixedOpen = !!S.fixedOpen;
   S.tasks.forEach(function(t){ if(t.desc == null) t.desc = ''; if(!t.loc) t.loc = FIXED_LOCS[0]; t.fixed = !!t.fixed; });
   Object.keys(S.entries).forEach(function(k){
@@ -786,22 +819,51 @@ function seed(){
 }
 
 /* ---------------- theme ---------------- */
-var FLOWER_TILE =
-  "<svg xmlns='http://www.w3.org/2000/svg' width='190' height='190'><g opacity='0.5'>" +
-  "<g transform='translate(34,42)'><circle cx='0' cy='-11' r='6' fill='#F2A9BD'/><circle cx='10.5' cy='-3.4' r='6' fill='#F2A9BD'/><circle cx='6.5' cy='8.9' r='6' fill='#F2A9BD'/><circle cx='-6.5' cy='8.9' r='6' fill='#F2A9BD'/><circle cx='-10.5' cy='-3.4' r='6' fill='#F2A9BD'/><circle cx='0' cy='0' r='5' fill='#F4D06F'/></g>" +
-  "<g transform='translate(128,120)'><path d='M0 14 L0 34' stroke='#A5C99B' stroke-width='2.5' fill='none'/><path d='M-10 2 q0 -16 10 -22 q10 6 10 22 q-10 9 -20 0 Z' fill='#EE8FA8'/><path d='M-9 1 q-2 -10 3 -15 L-3 2 Z' fill='#E97D9C'/><path d='M9 1 q2 -10 -3 -15 L3 2 Z' fill='#E97D9C'/><ellipse cx='-8' cy='26' rx='7' ry='3.5' fill='#A5C99B' transform='rotate(-28 -8 26)'/><ellipse cx='8' cy='30' rx='7' ry='3.5' fill='#A5C99B' transform='rotate(28 8 30)'/></g>" +
-  "<g transform='translate(150,44)'><path d='M0 20 C -4 10 -4 2 0 -6' stroke='#A5C99B' stroke-width='2.2' fill='none'/><ellipse cx='-6' cy='4' rx='6.5' ry='3' fill='#B9D6AE' transform='rotate(-32 -6 4)'/><ellipse cx='5' cy='-1' rx='6.5' ry='3' fill='#B9D6AE' transform='rotate(30 5 -1)'/></g>" +
-  "<g transform='translate(64,140)'><circle cx='0' cy='-7' r='4' fill='#F6C6D3'/><circle cx='6.7' cy='2.2' r='4' fill='#F6C6D3'/><circle cx='4.1' cy='5.7' r='4' fill='#F6C6D3'/><circle cx='-4.1' cy='5.7' r='4' fill='#F6C6D3'/><circle cx='-6.7' cy='-2.2' r='4' fill='#F6C6D3'/><circle cx='0' cy='0' r='3.2' fill='#F4D06F'/></g>" +
-  "<circle cx='100' cy='24' r='2.6' fill='#F2A9BD'/><circle cx='16' cy='108' r='2.6' fill='#F6C6D3'/><circle cx='176' cy='166' r='2.6' fill='#F2A9BD'/><circle cx='104' cy='170' r='2.2' fill='#A5C99B'/>" +
+// 숲 테마: 담쟁이 잎이 벽을 이루는 배경 타일 + 위에서 늘어지는 덩굴 스트립
+var IVY_LEAF =
+  "<g id='v'><path d='M0 0 Q -8 -4 -13 -9 Q -16 -13 -12 -16 Q -9 -18 -6 -16 Q -8 -22 -3 -25 Q 0 -27 3 -25 Q 8 -22 6 -16 Q 9 -18 12 -16 Q 16 -13 13 -9 Q 8 -4 0 0 Z'/>" +
+  "<path d='M0 -3 L 0 -21' stroke='#3F7048' stroke-width='1.2' fill='none' opacity='.35'/></g>";
+var FOREST_TILE =
+  "<svg xmlns='http://www.w3.org/2000/svg' width='230' height='230'><defs>" + IVY_LEAF + "</defs><g opacity='0.5'>" +
+  "<path d='M-12 26 Q 60 54 118 30 T 242 38' stroke='#7AA981' stroke-width='2.4' fill='none' opacity='.6'/>" +
+  "<path d='M-12 118 Q 55 96 120 116 T 242 108' stroke='#7AA981' stroke-width='2.4' fill='none' opacity='.6'/>" +
+  "<path d='M-12 202 Q 70 226 130 204 T 242 212' stroke='#7AA981' stroke-width='2.4' fill='none' opacity='.6'/>" +
+  "<use href='#v' fill='#6FA477' transform='translate(18,44) rotate(21) scale(1.7)'/>" +
+  "<use href='#v' fill='#8ABF8E' transform='translate(64,30) rotate(-33) scale(1.45)'/>" +
+  "<use href='#v' fill='#5B9464' transform='translate(112,50) rotate(8) scale(1.9)'/>" +
+  "<use href='#v' fill='#A5CFA6' transform='translate(160,32) rotate(41) scale(1.5)'/>" +
+  "<use href='#v' fill='#7FB584' transform='translate(206,52) rotate(-16) scale(1.7)'/>" +
+  "<use href='#v' fill='#8ABF8E' transform='translate(38,90) rotate(-49) scale(1.85)'/>" +
+  "<use href='#v' fill='#5B9464' transform='translate(88,80) rotate(16) scale(1.5)'/>" +
+  "<use href='#v' fill='#A5CFA6' transform='translate(136,94) rotate(-7) scale(1.75)'/>" +
+  "<use href='#v' fill='#6FA477' transform='translate(184,84) rotate(33) scale(1.55)'/>" +
+  "<use href='#v' fill='#7FB584' transform='translate(228,96) rotate(-27) scale(1.4)'/>" +
+  "<use href='#v' fill='#5B9464' transform='translate(16,136) rotate(27) scale(1.6)'/>" +
+  "<use href='#v' fill='#A5CFA6' transform='translate(62,148) rotate(-21) scale(1.75)'/>" +
+  "<use href='#v' fill='#7FB584' transform='translate(110,132) rotate(44) scale(1.5)'/>" +
+  "<use href='#v' fill='#6FA477' transform='translate(158,146) rotate(4) scale(1.9)'/>" +
+  "<use href='#v' fill='#8ABF8E' transform='translate(204,136) rotate(-36) scale(1.55)'/>" +
+  "<use href='#v' fill='#A5CFA6' transform='translate(40,192) rotate(-9) scale(1.6)'/>" +
+  "<use href='#v' fill='#6FA477' transform='translate(90,200) rotate(24) scale(1.75)'/>" +
+  "<use href='#v' fill='#8ABF8E' transform='translate(140,188) rotate(-42) scale(1.45)'/>" +
+  "<use href='#v' fill='#5B9464' transform='translate(188,200) rotate(13) scale(1.65)'/>" +
+  "<use href='#v' fill='#7FB584' transform='translate(230,190) rotate(-4) scale(1.5)'/>" +
+  "<use href='#v' fill='#8ABF8E' transform='translate(0,226) rotate(36) scale(1.5)'/>" +
+  "<use href='#v' fill='#5B9464' transform='translate(226,10) rotate(-24) scale(1.45)'/>" +
+  "<use href='#v' fill='#A5CFA6' transform='translate(66,4) rotate(11) scale(1.4)'/>" +
+  "<use href='#v' fill='#7FB584' transform='translate(148,0) rotate(-31) scale(1.5)'/>" +
   "</g></svg>";
-var GARLAND_TILE =
-  "<svg xmlns='http://www.w3.org/2000/svg' width='210' height='40'><g opacity='0.85'>" +
-  "<path d='M0 30 Q 52 16 105 30 T 210 30' stroke='#A5C99B' stroke-width='2.5' fill='none'/>" +
-  "<g transform='translate(30,24)'><circle cx='0' cy='-7.5' r='4.4' fill='#F2A9BD'/><circle cx='7.1' cy='-2.3' r='4.4' fill='#F2A9BD'/><circle cx='4.4' cy='6.1' r='4.4' fill='#F2A9BD'/><circle cx='-4.4' cy='6.1' r='4.4' fill='#F2A9BD'/><circle cx='-7.1' cy='-2.3' r='4.4' fill='#F2A9BD'/><circle cx='0' cy='0' r='3.6' fill='#F4D06F'/></g>" +
-  "<ellipse cx='68' cy='22' rx='7' ry='3' fill='#A5C99B' transform='rotate(-22 68 22)'/>" +
-  "<g transform='translate(105,22)'><path d='M-6 1 q0 -11 6 -15 q6 4 6 15 q-6 6 -12 0 Z' fill='#EE8FA8'/></g>" +
-  "<ellipse cx='143' cy='22' rx='7' ry='3' fill='#A5C99B' transform='rotate(22 143 22)'/>" +
-  "<g transform='translate(180,24)'><circle cx='0' cy='-7.5' r='4.4' fill='#F6C6D3'/><circle cx='7.1' cy='-2.3' r='4.4' fill='#F6C6D3'/><circle cx='4.4' cy='6.1' r='4.4' fill='#F6C6D3'/><circle cx='-4.4' cy='6.1' r='4.4' fill='#F6C6D3'/><circle cx='-7.1' cy='-2.3' r='4.4' fill='#F6C6D3'/><circle cx='0' cy='0' r='3.6' fill='#F4D06F'/></g>" +
+var VINE_TILE =
+  "<svg xmlns='http://www.w3.org/2000/svg' width='240' height='46'><defs>" + IVY_LEAF + "</defs><g opacity='0.85'>" +
+  "<path d='M0 6 Q 60 14 120 8 T 240 7' stroke='#4C7B52' stroke-width='2.5' fill='none'/>" +
+  "<path d='M64 10 q 5 12 -2 23' stroke='#5E8F63' stroke-width='1.6' fill='none'/>" +
+  "<path d='M178 8 q -4 11 2 22' stroke='#5E8F63' stroke-width='1.6' fill='none'/>" +
+  "<use href='#v' fill='#5B9464' transform='translate(20,32) rotate(10) scale(1.0)'/>" +
+  "<use href='#v' fill='#8ABF8E' transform='translate(61,44) rotate(-13) scale(0.7)'/>" +
+  "<use href='#v' fill='#6FA477' transform='translate(100,34) rotate(-8) scale(1.05)'/>" +
+  "<use href='#v' fill='#7FB584' transform='translate(140,30) rotate(15) scale(0.9)'/>" +
+  "<use href='#v' fill='#A5CFA6' transform='translate(180,42) rotate(7) scale(0.68)'/>" +
+  "<use href='#v' fill='#5B9464' transform='translate(218,33) rotate(-16) scale(1.0)'/>" +
   "</g></svg>";
 
 function applyTheme(t){
@@ -810,9 +872,9 @@ function applyTheme(t){
   document.querySelectorAll('.themeseg button').forEach(function(b){
     b.setAttribute('aria-pressed', String(b.dataset.t === t));
   });
-  if(t === 'flower'){
-    document.body.style.backgroundImage = 'url("data:image/svg+xml,' + encodeURIComponent(FLOWER_TILE) + '")';
-    document.getElementById('garland').style.backgroundImage = 'url("data:image/svg+xml,' + encodeURIComponent(GARLAND_TILE) + '")';
+  if(t === 'forest'){
+    document.body.style.backgroundImage = 'url("data:image/svg+xml,' + encodeURIComponent(FOREST_TILE) + '")';
+    document.getElementById('garland').style.backgroundImage = 'url("data:image/svg+xml,' + encodeURIComponent(VINE_TILE) + '")';
   }else{
     document.body.style.backgroundImage = '';
   }
@@ -1094,6 +1156,41 @@ function renderDay(){
     elLanes.appendChild(nl);
   }
   renderPlant();
+  renderWeekStrip();
+}
+
+/* ---------------- week strip (화분 선반) ---------------- */
+var elWeek = document.getElementById('weekStrip');
+function renderWeekStrip(){
+  var base = parseKey(view);
+  var sun = new Date(base); sun.setDate(base.getDate() - base.getDay());
+  var today = todayKey();
+  var html = '';
+  for(var i = 0; i < 7; i++){
+    var d = new Date(sun); d.setDate(sun.getDate() + i);
+    var k = dateKeyOf(d);
+    var r = dayReport(k);
+    html += '<button class="wcell' + (k === view ? ' sel' : '') + (k === today ? ' tod' : '') +
+      '" data-k="' + k + '" title="' + fmtKeyShort(k) + '">' +
+      '<span>' + DOW[d.getDay()] + '</span>' +
+      '<span class="wnum">' + d.getDate() + '</span>' +
+      (r.hasData
+        ? '<span class="sdot s-' + r.state + '"></span><span class="wh">' + (Math.round(r.attended/30)/2) + 'h</span>'
+        : '<span class="wdash">–</span><span class="wh"></span>') +
+      '</button>';
+  }
+  elWeek.innerHTML = html;
+  elWeek.querySelectorAll('.wcell').forEach(function(b){
+    b.addEventListener('click', function(){ view = b.dataset.k; renderDay(); });
+  });
+}
+
+function scrollToNow(){
+  if(view !== todayKey()) return;
+  var now = new Date();
+  var y = elLanes.getBoundingClientRect().top + window.scrollY +
+          (now.getHours()*60 + now.getMinutes()) * PXM;
+  window.scrollTo({ top: Math.max(0, y - 250), behavior: 'auto' });
 }
 
 function buildBlock(sg){
@@ -1219,6 +1316,84 @@ function addEntry(dateKey, t, start){
   save(); renderDay();
 }
 
+/* ---------------- draw a one-off block on the empty timeline ---------------- */
+elLanes.addEventListener('pointerdown', function(ev){
+  if(ev.target !== elLanes || ev.button !== 0 || ev.pointerType === 'touch') return;
+  ev.preventDefault();
+  var r = elLanes.getBoundingClientRect();
+  var anchor = clamp(snap((ev.clientY - r.top) / PXM), 0, DAY - SNAP);
+  var drawing = false, g = null, s = anchor, t = anchor + SNAP;
+  elLanes.setPointerCapture(ev.pointerId);
+  function mm(mv){
+    if(!drawing && Math.abs(mv.clientY - ev.clientY) > 6) drawing = true;
+    if(!drawing) return;
+    var cur = clamp(snap((mv.clientY - r.top) / PXM), 0, DAY);
+    s = Math.min(anchor, cur); t = Math.max(anchor, cur);
+    if(t - s < SNAP) t = s + SNAP;
+    if(!g){
+      g = document.createElement('div');
+      g.className = 'dropghost';
+      g.style.left = '2px'; g.style.right = '2px';
+      elLanes.appendChild(g);
+    }
+    g.style.top = (s * PXM) + 'px';
+    g.style.height = ((t - s) * PXM) + 'px';
+    g.textContent = fmtHM(s) + ' – ' + fmtHM(t);
+  }
+  function up(uv){
+    elLanes.releasePointerCapture(uv.pointerId);
+    elLanes.removeEventListener('pointermove', mm);
+    elLanes.removeEventListener('pointerup', up);
+    elLanes.removeEventListener('pointercancel', up);
+    if(g) g.remove();
+    if(drawing && uv.type === 'pointerup' && t - s >= SNAP) openQuickCreate(s, t - s);
+  }
+  elLanes.addEventListener('pointermove', mm);
+  elLanes.addEventListener('pointerup', up);
+  elLanes.addEventListener('pointercancel', up);
+});
+
+function openQuickCreate(start, dur){
+  openDialog('새 블록', fmtKeyShort(view) + ' · 팔레트 박스 없이 이 날에만 넣는 일회성 업무예요.',
+    '<div class="row"><label>이름</label><input type="text" id="qName" maxlength="40" placeholder="예: 시약 수령"></div>' +
+    '<div class="row"><label>난이도</label><select id="qDiff"><option value="high">상</option><option value="mid" selected>중</option><option value="low">하</option></select></div>' +
+    '<div class="row"><label>장소</label><select id="qLoc"></select></div>' +
+    '<div class="row done-row"><input type="checkbox" id="qPassive"><label for="qPassive" style="margin:0;color:var(--ink)">🔁 돌려놓기 (식물 계산 제외)</label></div>' +
+    '<div class="row"><label>시작 시간</label><input type="time" id="qStart" value="' + fmtHM(start) + '"></div>' +
+    '<div class="row"><label>소요 시간</label><div class="two">' +
+      '<div><input type="number" id="qH" min="0" max="24" value="' + Math.floor(dur/60) + '" aria-label="시간"></div>' +
+      '<div><input type="number" id="qM" min="0" max="59" value="' + (dur%60) + '" aria-label="분"></div>' +
+    '</div><label style="margin-top:3px">시간 / 분</label></div>' +
+    '<div class="form-err" id="qErr"></div>',
+    [
+      {cls:'ghost', label:'닫기', fn:closeDialog},
+      'spacer',
+      {cls:'primary', label:'만들기', fn:function(){
+        var name = document.getElementById('qName').value.trim();
+        if(!name){
+          var er = document.getElementById('qErr');
+          er.textContent = '이름을 입력해 주세요.'; er.classList.add('show');
+          document.getElementById('qName').focus();
+          return;
+        }
+        var tv = document.getElementById('qStart').value || fmtHM(start);
+        var p = tv.split(':');
+        var h = parseInt(document.getElementById('qH').value, 10) || 0;
+        var m = parseInt(document.getElementById('qM').value, 10) || 0;
+        addEntryRaw(view, {
+          name:name,
+          mins:clamp(h*60 + m, 5, DAY),
+          diff:document.getElementById('qDiff').value,
+          passive:document.getElementById('qPassive').checked,
+          desc:'',
+          loc:document.getElementById('qLoc').value || FIXED_LOCS[0]
+        }, clamp((+p[0])*60 + (+p[1]), 0, DAY - 5));
+        closeDialog(); save(); renderDay();
+      }}
+    ]);
+  renderLocSelect(document.getElementById('qLoc'), FIXED_LOCS[0]);
+}
+
 /* ---------------- auto assign ---------------- */
 // 점심 11:30–13:30, 저녁 17:30–19:30은 비워 둔다 (돌려놓기 업무는 예외)
 function findSlot(blocked, from, dur){
@@ -1322,6 +1497,13 @@ function renderPlant(){
     else if(state === 2) detail += ' — 슬슬 무리예요.';
     else detail += ' — 오늘은 너무 많아요!';
   }
+  var seen = {}, doneCnt = 0, totCnt = 0;
+  segsFor(view).forEach(function(sg){
+    if(seen[sg.e.id]) return;
+    seen[sg.e.id] = 1; totCnt++;
+    if(sg.e.done) doneCnt++;
+  });
+  if(totCnt) detail += ' · 완료 <b>' + doneCnt + '/' + totCnt + '</b>';
   document.getElementById('moodDetail').innerHTML = detail;
 
   var fill = document.getElementById('gaugeFill');
@@ -1360,6 +1542,22 @@ function nextBootModal(){
 overlay.addEventListener('click', function(e){ if(e.target === overlay) closeDialog(); });
 document.addEventListener('keydown', function(e){
   if(e.key === 'Escape' && overlay.classList.contains('open')) closeDialog();
+});
+
+/* ---------------- keyboard shortcuts ---------------- */
+document.addEventListener('keydown', function(e){
+  if(overlay.classList.contains('open') || e.ctrlKey || e.metaKey || e.altKey) return;
+  var tg = e.target;
+  if(tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA' || tg.tagName === 'SELECT' || tg.isContentEditable)) return;
+  if(e.key === 'ArrowLeft'){ e.preventDefault(); view = shiftKey(view, -1); renderDay(); }
+  else if(e.key === 'ArrowRight'){ e.preventDefault(); view = shiftKey(view, 1); renderDay(); }
+  else if(e.key === 't' || e.key === 'T'){ view = todayKey(); renderDay(); scrollToNow(); }
+  else if(e.key === 'n' || e.key === 'N'){
+    e.preventDefault();
+    var f = document.getElementById('fName');
+    f.scrollIntoView({ block: 'center' });
+    f.focus();
+  }
 });
 
 function openPlaceDialog(t){
@@ -1418,6 +1616,51 @@ function openEditDialog(e, dayKey){
     ]);
   renderLocSelect(document.getElementById('eLoc'), e.loc);
 }
+
+/* ---------------- day presets ---------------- */
+function openPresetDialog(){
+  var rows = S.presets.length ? S.presets.map(function(p){
+    var tot = 0;
+    p.entries.forEach(function(e){ tot += e.dur; });
+    return '<div class="prow"><div class="pinfo"><div class="pname">' + esc(p.name) + '</div>' +
+      '<div class="pmeta2">블록 ' + p.entries.length + '개 · 총 ' + fmtDur(tot) + '</div></div>' +
+      '<button class="btn ghost small" data-apply="' + p.id + '">적용</button>' +
+      '<button class="pdel" data-del="' + p.id + '" title="삭제" aria-label="삭제">✕</button></div>';
+  }).join('') : '<div style="font-size:12px;color:var(--muted)">저장된 프리셋이 없어요. 하루를 꾸민 뒤 아래에서 저장해 보세요.</div>';
+  var dayCnt = (S.entries[view] || []).length;
+  openDialog('하루 프리셋', '자주 쓰는 하루 구성을 저장해 두고 한 번에 배치해요. 적용하면 기존 블록에 추가돼요.',
+    rows +
+    '<div class="addloc"><input type="text" id="pName" placeholder="프리셋 이름 (예: 배양일)" maxlength="24">' +
+    '<button class="btn ghost small" id="pSave"' + (dayCnt ? '' : ' disabled') + '>현재 하루 저장</button></div>' +
+    (dayCnt ? '' : '<div style="font-size:12px;color:var(--muted);margin-top:6px">저장하려면 먼저 이 날짜에 블록을 배치하세요.</div>'),
+    [{cls:'primary', label:'완료', fn:closeDialog}]);
+  document.getElementById('pSave').addEventListener('click', function(){
+    var name = document.getElementById('pName').value.trim();
+    if(!name || !(S.entries[view] || []).length) return;
+    S.presets.push({ id:uid(), name:name, entries:(S.entries[view] || []).map(function(e){
+      return {name:e.name, diff:e.diff, passive:e.passive, desc:e.desc || '', loc:e.loc || '', start:e.start, dur:e.dur};
+    })});
+    save(); openPresetDialog();
+  });
+  var body = document.getElementById('dlgBody');
+  body.querySelectorAll('[data-apply]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var p = S.presets.find(function(x){ return x.id === b.dataset.apply; });
+      if(!p) return;
+      p.entries.forEach(function(pe){
+        addEntryRaw(view, {name:pe.name, mins:pe.dur, diff:pe.diff, passive:pe.passive, desc:pe.desc, loc:pe.loc}, pe.start);
+      });
+      closeDialog(); save(); renderDay();
+    });
+  });
+  body.querySelectorAll('[data-del]').forEach(function(b){
+    b.addEventListener('click', function(){
+      S.presets = S.presets.filter(function(x){ return x.id !== b.dataset.del; });
+      save(); openPresetDialog();
+    });
+  });
+}
+document.getElementById('presetBtn').addEventListener('click', openPresetDialog);
 
 /* ---------------- archiving ---------------- */
 function pastDaysWithEntries(){
@@ -1550,6 +1793,9 @@ function renderMenu(){
   html += '<button class="btn ghost small" id="mArchiveNow"' + (pastDaysWithEntries().length ? '' : ' disabled') + '>지난 기록 아카이빙</button>';
   html += '<button class="btn ghost small" id="mReport"' + (S.lastReport ? '' : ' disabled') + '>주간 보고서</button>';
   html += '</div>';
+  html += '<div class="mrow"><span style="font-size:12px;color:var(--muted);align-self:center">데이터:</span>' +
+    '<button class="btn ghost small" id="mBackup">백업 (.json)</button>' +
+    '<button class="btn ghost small" id="mImport">가져오기</button></div>';
   if(keys.length){
     html += '<div class="mrow"><span style="font-size:12px;color:var(--muted);align-self:center">내보내기:</span>' +
       '<button class="btn ghost small" data-ex="html">HTML</button>' +
@@ -1582,6 +1828,14 @@ function renderMenu(){
   if(mr && !mr.disabled) mr.addEventListener('click', function(){
     menuPanel.classList.remove('open');
     openReport(S.lastReport);
+  });
+  document.getElementById('mBackup').addEventListener('click', function(e){
+    e.stopPropagation();
+    download('plant-data-' + todayKey() + '.json', 'application/json;charset=utf-8', JSON.stringify(S, null, 1));
+  });
+  document.getElementById('mImport').addEventListener('click', function(e){
+    e.stopPropagation();
+    document.getElementById('importFile').click();
   });
   menuPanel.querySelectorAll('.arow').forEach(function(r){
     r.addEventListener('click', function(){
@@ -1672,10 +1926,44 @@ function exportArchive(kind){
   }
 }
 
+document.getElementById('importFile').addEventListener('change', function(){
+  var f = this.files && this.files[0];
+  this.value = '';
+  if(!f) return;
+  var rd = new FileReader();
+  rd.onload = function(){
+    var data = null;
+    try{ data = JSON.parse(rd.result); }catch(e){}
+    if(!data || !data.tasks || !data.entries){
+      openDialog('가져오기 실패', '', '<div class="desc-note">이 파일은 오늘의 화분 백업(.json)이 아니에요.</div>',
+        [{cls:'primary', label:'확인', fn:closeDialog}]);
+      return;
+    }
+    openDialog('데이터 가져오기', f.name,
+      '<div class="desc-note">지금 브라우저에 있는 모든 데이터가 파일 내용으로 교체돼요. 되돌릴 수 없어요.</div>',
+      [
+        {cls:'ghost', label:'취소', fn:closeDialog},
+        'spacer',
+        {cls:'danger', label:'교체', fn:function(){
+          S = data;
+          normalize();
+          save();
+          applyTheme(S.theme);
+          ownerInput.value = S.owner;
+          refreshLocSelects();
+          renderChips();
+          renderDay();
+          closeDialog();
+        }}
+      ]);
+  };
+  rd.readAsText(f);
+});
+
 /* ---------------- date nav ---------------- */
 document.getElementById('prevDay').addEventListener('click', function(){ view = shiftKey(view, -1); renderDay(); });
 document.getElementById('nextDay').addEventListener('click', function(){ view = shiftKey(view, 1); renderDay(); });
-document.getElementById('goToday').addEventListener('click', function(){ view = todayKey(); renderDay(); });
+document.getElementById('goToday').addEventListener('click', function(){ view = todayKey(); renderDay(); scrollToNow(); });
 document.getElementById('datePick').addEventListener('change', function(){
   if(this.value){ view = this.value; renderDay(); }
 });
@@ -1687,6 +1975,7 @@ ownerInput.value = S.owner;
 refreshLocSelects();
 renderChips();
 renderDay();
+scrollToNow();
 
 if(pastDaysWithEntries().length && S.lastAskDay !== todayKey()){
   bootModals.push(openArchiveAsk);
