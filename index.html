@@ -212,6 +212,19 @@ header.top{
 }
 .chip .ops button:hover{border-color:var(--accent)}
 .palette .tip{font-size:12px; color:var(--muted); padding:12px 14px 0; line-height:1.5}
+.fixedbox{margin-top:2px}
+.fixedbox .fxhead{
+  width:100%; display:flex; align-items:center; gap:7px;
+  border:1px solid var(--line); border-radius:9px; background:var(--surface2);
+  padding:8px 11px; font-weight:700; font-size:13px; text-align:left;
+}
+.fixedbox .fxhead:hover{border-color:var(--accent)}
+.fixedbox .fxhead .arrow{transition:transform .2s; font-size:10px; color:var(--muted)}
+.fixedbox.open .fxhead .arrow{transform:rotate(90deg)}
+.fixedbox .fxhead .cnt{margin-left:auto; color:var(--muted); font-weight:500; font-size:12px}
+.fixedbox .fxchips{display:none; flex-direction:column; gap:8px; margin-top:8px}
+.fixedbox.open .fxchips{display:flex}
+@media (prefers-reduced-motion:reduce){ .fixedbox .fxhead .arrow{transition:none} }
 
 /* ---------- plant card ---------- */
 .plantcard{
@@ -554,6 +567,13 @@ try{
           <div class="hint">Culture처럼 걸어두는 업무. 타임라인만 차지하고 식물 계산에서는 빠져요.</div>
         </div>
       </div>
+      <div class="passive-row">
+        <input type="checkbox" id="fFixed">
+        <div>
+          <label for="fFixed" style="margin:0; color:var(--ink); font-size:13px">📌 고정 업무</label>
+          <div class="hint">자주 반복하는 업무. 아래 '고정 업무' 토글 안에 접어서 정리돼요.</div>
+        </div>
+      </div>
       <div class="form-err" id="fErr"></div>
       <div class="form-actions">
         <button class="btn primary" id="fSubmit">박스 추가</button>
@@ -751,16 +771,17 @@ function normalize(){
     try{ dark = window.matchMedia('(prefers-color-scheme: dark)').matches; }catch(e){}
     S.theme = dark ? 'dark' : 'light';
   }
-  S.tasks.forEach(function(t){ if(t.desc == null) t.desc = ''; if(!t.loc) t.loc = FIXED_LOCS[0]; });
+  S.fixedOpen = !!S.fixedOpen;
+  S.tasks.forEach(function(t){ if(t.desc == null) t.desc = ''; if(!t.loc) t.loc = FIXED_LOCS[0]; t.fixed = !!t.fixed; });
   Object.keys(S.entries).forEach(function(k){
     S.entries[k].forEach(function(e){ if(e.desc == null) e.desc = ''; if(!e.loc) e.loc = FIXED_LOCS[0]; });
   });
 }
 function seed(){
   S.tasks = [
-    {id:uid(), name:'Culture (배양)', mins:960, diff:'mid', passive:true,  desc:'세포 배양 걸어두기', loc:'Cell Room'},
-    {id:uid(), name:'실험', mins:180, diff:'high', passive:false, desc:'', loc:'Main Room'},
-    {id:uid(), name:'랩미팅 준비', mins:120, diff:'low', passive:false, desc:'', loc:'Main Room'}
+    {id:uid(), name:'Culture (배양)', mins:960, diff:'mid', passive:true,  fixed:false, desc:'세포 배양 걸어두기', loc:'Cell Room'},
+    {id:uid(), name:'실험', mins:180, diff:'high', passive:false, fixed:false, desc:'', loc:'Main Room'},
+    {id:uid(), name:'랩미팅 준비', mins:120, diff:'low', passive:false, fixed:true, desc:'', loc:'Main Room'}
   ];
 }
 
@@ -869,6 +890,7 @@ function readForm(){
   formError('');
   return { name:name, mins:mins, diff:formDiff,
            passive:document.getElementById('fPassive').checked,
+           fixed:document.getElementById('fFixed').checked,
            desc:document.getElementById('fDesc').value.trim(),
            loc:document.getElementById('fLoc').value || FIXED_LOCS[0] };
 }
@@ -880,6 +902,7 @@ function resetForm(){
   document.getElementById('fH').value = 1;
   document.getElementById('fM').value = 0;
   document.getElementById('fPassive').checked = false;
+  document.getElementById('fFixed').checked = false;
   document.getElementById('fDesc').value = '';
   renderLocSelect(document.getElementById('fLoc'), FIXED_LOCS[0]);
   setFormDiff('mid');
@@ -897,9 +920,9 @@ document.getElementById('fSubmit').addEventListener('click', function(){
   var v = readForm(); if(!v) return;
   if(editingTaskId){
     var t = S.tasks.find(function(x){ return x.id === editingTaskId; });
-    if(t){ t.name=v.name; t.mins=v.mins; t.diff=v.diff; t.passive=v.passive; t.desc=v.desc; t.loc=v.loc; }
+    if(t){ t.name=v.name; t.mins=v.mins; t.diff=v.diff; t.passive=v.passive; t.fixed=v.fixed; t.desc=v.desc; t.loc=v.loc; }
   }else{
-    S.tasks.push({ id:uid(), name:v.name, mins:v.mins, diff:v.diff, passive:v.passive, desc:v.desc, loc:v.loc });
+    S.tasks.push({ id:uid(), name:v.name, mins:v.mins, diff:v.diff, passive:v.passive, fixed:v.fixed, desc:v.desc, loc:v.loc });
   }
   save(); resetForm(); renderChips();
 });
@@ -913,6 +936,7 @@ function startEditTask(t){
   document.getElementById('fH').value = Math.floor(t.mins/60);
   document.getElementById('fM').value = t.mins%60;
   document.getElementById('fPassive').checked = t.passive;
+  document.getElementById('fFixed').checked = !!t.fixed;
   document.getElementById('fDesc').value = t.desc || '';
   renderLocSelect(document.getElementById('fLoc'), t.loc);
   setFormDiff(t.diff);
@@ -930,7 +954,25 @@ function renderChips(){
     elChips.appendChild(p);
     return;
   }
-  S.tasks.forEach(function(t){
+  S.tasks.filter(function(t){ return !t.fixed; }).forEach(function(t){ elChips.appendChild(makeChip(t)); });
+  var fixed = S.tasks.filter(function(t){ return t.fixed; });
+  if(fixed.length){
+    var fb = document.createElement('div');
+    fb.className = 'fixedbox' + (S.fixedOpen ? ' open' : '');
+    fb.innerHTML =
+      '<button class="fxhead" aria-expanded="' + String(!!S.fixedOpen) + '">' +
+      '<span class="arrow">▶</span><span>📌 고정 업무</span>' +
+      '<span class="cnt">' + fixed.length + '개</span></button>' +
+      '<div class="fxchips"></div>';
+    fb.querySelector('.fxhead').addEventListener('click', function(){
+      S.fixedOpen = !S.fixedOpen; save(); renderChips();
+    });
+    var inner = fb.querySelector('.fxchips');
+    fixed.forEach(function(t){ inner.appendChild(makeChip(t)); });
+    elChips.appendChild(fb);
+  }
+}
+function makeChip(t){
     var c = document.createElement('div');
     c.className = 'chip d-' + t.diff;
     c.draggable = true;
@@ -970,8 +1012,7 @@ function renderChips(){
     c.addEventListener('keydown', function(e){
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPlaceDialog(t); }
     });
-    elChips.appendChild(c);
-  });
+    return c;
 }
 
 /* ---------------- timeline rendering ---------------- */
@@ -1217,7 +1258,7 @@ document.getElementById('autoBtn').addEventListener('click', function(){
     S.tasks.map(function(t){
       return '<label class="pickrow"><input type="checkbox" value="' + t.id + '" checked>' +
         '<span>' + esc(t.name) + '</span>' +
-        '<span class="pmeta">' + fmtDur(t.mins) + (t.passive ? ' · 🔁' : '') + '</span></label>';
+        '<span class="pmeta">' + fmtDur(t.mins) + (t.passive ? ' · 🔁' : '') + (t.fixed ? ' · 📌' : '') + '</span></label>';
     }).join('') + '</div></div>' +
     '<div class="mnote" style="font-size:12px;color:var(--muted)">점심 11:30–13:30, 저녁 17:30–19:30은 비워 두고 배치해요 (돌려놓기 업무는 예외).</div>';
   openDialog('자동 배치', fmtKeyShort(view) + ' 타임라인에 빈 자리를 찾아 배치해요.', body,
