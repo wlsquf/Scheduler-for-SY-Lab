@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>오늘의 화분</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F5EF; --surface:#FFFFFF; --surface2:#ECF0E7;
+  --ink:#242E26; --muted:#68766B; --line:#D9E0D5;
+  --accent:#3E7C4F; --accent-soft:#DCEAE0; --accent-ink:#FFFFFF;
+  --hi:#C9403C; --hi-bg:#F9E8E6;
+  --md:#C98F06; --md-bg:#FAF1DB;
+  --lo:#3F9142; --lo-bg:#E6F2E6;
+  --hatch:rgba(36,46,38,.07);
+  --shadow:0 10px 28px rgba(36,46,38,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141915; --surface:#1D241F; --surface2:#242C26;
+    --ink:#E4EAE1; --muted:#96A399; --line:#333D35;
+    --accent:#71B983; --accent-soft:#27382C; --accent-ink:#10150F;
+    --hi:#E0736C; --hi-bg:#3A2523;
+    --md:#D9A93F; --md-bg:#39301C;
+    --lo:#66B36A; --lo-bg:#233626;
+    --hatch:rgba(228,234,225,.07);
+    --shadow:0 10px 28px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141915; --surface:#1D241F; --surface2:#242C26;
+  --ink:#E4EAE1; --muted:#96A399; --line:#333D35;
+  --accent:#71B983; --accent-soft:#27382C; --accent-ink:#10150F;
+  --hi:#E0736C; --hi-bg:#3A2523;
+  --md:#D9A93F; --md-bg:#39301C;
+  --lo:#66B36A; --lo-bg:#233626;
+  --hatch:rgba(228,234,225,.07);
+  --shadow:0 10px 28px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'IBM Plex Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  font-size:14px; line-height:1.55;
+  padding:20px 18px 60px;
+}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+button{font:inherit; color:inherit; cursor:pointer; background:none; border:none; padding:0}
+input,select{font:inherit; color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:4px}
+
+.wrap{max-width:1180px; margin:0 auto}
+
+/* ---------- header ---------- */
+header.top{
+  display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between;
+  gap:14px; margin-bottom:18px;
+}
+.brand .eyebrow{
+  font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.18em;
+  color:var(--accent); text-transform:uppercase;
+}
+.brand h1{
+  font-family:'Gowun Batang',serif; font-weight:700; font-size:30px;
+  margin:2px 0 0; line-height:1.2; text-wrap:balance;
+}
+.datenav{display:flex; align-items:center; gap:8px}
+.datenav .nav{
+  width:34px; height:34px; border:1px solid var(--line); border-radius:8px;
+  background:var(--surface); font-size:15px; line-height:1;
+}
+.datenav .nav:hover,.datenav .today:hover{border-color:var(--accent)}
+.datenav input[type="date"]{
+  border:1px solid var(--line); border-radius:8px; background:var(--surface);
+  padding:6px 8px; font-family:'IBM Plex Mono',monospace; font-size:13px;
+}
+.datenav .dow{font-weight:700; min-width:38px; text-align:center}
+.datenav .today{
+  border:1px solid var(--line); border-radius:8px; background:var(--surface);
+  padding:6px 12px; font-weight:500;
+}
+
+/* ---------- layout ---------- */
+.cols{display:grid; grid-template-columns:296px 1fr; gap:18px; align-items:start}
+@media (max-width:900px){ .cols{grid-template-columns:1fr} }
+
+.card{
+  background:var(--surface); border:1px solid var(--line); border-radius:12px;
+}
+.card h2{
+  font-size:13px; font-weight:700; letter-spacing:.02em;
+  margin:0; padding:12px 14px 0;
+}
+
+/* ---------- palette ---------- */
+.palette{padding-bottom:12px}
+.palette .form{display:flex; flex-direction:column; gap:9px; padding:10px 14px 0}
+.palette label{font-size:12px; color:var(--muted); display:block; margin-bottom:3px}
+.palette input[type="text"],.palette input[type="number"]{
+  width:100%; border:1px solid var(--line); border-radius:8px;
+  background:var(--bg); padding:7px 9px;
+}
+.palette input[type="number"]{font-family:'IBM Plex Mono',monospace}
+.dur-row{display:flex; gap:8px}
+.dur-row>div{flex:1}
+.seg{display:flex; gap:6px}
+.seg button{
+  flex:1; border:1px solid var(--line); border-radius:8px; padding:6px 0;
+  background:var(--bg); font-weight:500; font-size:13px;
+}
+.seg button[aria-pressed="true"].d-high{background:var(--hi-bg); border-color:var(--hi); color:var(--hi); font-weight:700}
+.seg button[aria-pressed="true"].d-mid {background:var(--md-bg); border-color:var(--md); color:var(--md); font-weight:700}
+.seg button[aria-pressed="true"].d-low {background:var(--lo-bg); border-color:var(--lo); color:var(--lo); font-weight:700}
+.passive-row{display:flex; gap:8px; align-items:flex-start}
+.passive-row input{margin-top:3px; accent-color:var(--accent)}
+.passive-row .hint{font-size:12px; color:var(--muted); line-height:1.45}
+.form-actions{display:flex; gap:8px}
+.btn{
+  border-radius:8px; padding:8px 14px; font-weight:700; border:1px solid transparent;
+}
+.btn.primary{background:var(--accent); color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.ghost{border-color:var(--line); background:var(--surface); font-weight:500}
+.btn.danger{border-color:var(--hi); color:var(--hi); background:none; font-weight:500}
+.editing-note{font-size:12px; color:var(--accent); font-weight:700; display:none}
+.palette.editing .editing-note{display:block}
+.form-err{display:none; font-size:12px; color:var(--hi); font-weight:500}
+.form-err.show{display:block}
+
+.chips{display:flex; flex-direction:column; gap:8px; padding:12px 14px 0}
+.chips .empty{font-size:12.5px; color:var(--muted); padding:2px 0 4px}
+.chip{
+  position:relative; border-radius:9px; padding:8px 10px 8px 14px;
+  border:1px solid var(--line); background:var(--surface2);
+  cursor:grab; user-select:none; -webkit-user-drag:element;
+}
+.chip:active{cursor:grabbing}
+.chip::before{
+  content:""; position:absolute; left:0; top:0; bottom:0; width:5px;
+  border-radius:9px 0 0 9px;
+}
+.chip.d-high::before{background:var(--hi)} .chip.d-high{background:var(--hi-bg)}
+.chip.d-mid::before {background:var(--md)} .chip.d-mid {background:var(--md-bg)}
+.chip.d-low::before {background:var(--lo)} .chip.d-low {background:var(--lo-bg)}
+.chip .nm{font-weight:700; font-size:13.5px; padding-right:44px; word-break:break-all}
+.chip .meta{font-size:11.5px; color:var(--muted); font-family:'IBM Plex Mono',monospace; margin-top:1px}
+.chip .meta .pv{font-family:'IBM Plex Sans KR',sans-serif}
+.chip .ops{position:absolute; top:7px; right:8px; display:flex; gap:2px; opacity:0; transition:opacity .15s}
+.chip:hover .ops,.chip:focus-within .ops{opacity:1}
+.chip .ops button{
+  width:22px; height:22px; border-radius:6px; font-size:12px; line-height:1;
+  background:var(--surface); border:1px solid var(--line);
+}
+.chip .ops button:hover{border-color:var(--accent)}
+.palette .tip{font-size:12px; color:var(--muted); padding:12px 14px 0; line-height:1.5}
+
+/* ---------- plant card ---------- */
+.plantcard{
+  position:sticky; top:10px; z-index:10;
+  display:flex; gap:16px; align-items:center;
+  padding:12px 18px; margin-bottom:14px;
+  box-shadow:var(--shadow);
+}
+.plantcard .art{flex:0 0 108px}
+.plantcard .art svg{display:block; width:108px; height:auto}
+.plantcard .info{flex:1; min-width:0}
+.plantcard .mood{
+  font-family:'Gowun Batang',serif; font-weight:700; font-size:21px; line-height:1.25;
+}
+.plantcard .mood .st1{color:var(--accent)}
+.plantcard .mood .st2{color:var(--md)}
+.plantcard .mood .st3{color:var(--hi)}
+.plantcard .detail{font-size:12.5px; color:var(--muted); margin-top:2px}
+.plantcard .detail b{color:var(--ink); font-weight:700}
+.gauge{margin-top:9px; max-width:420px}
+.gauge .track{
+  position:relative; height:10px; border-radius:6px; background:var(--surface2);
+  border:1px solid var(--line); overflow:visible;
+}
+.gauge .fill{
+  position:absolute; left:0; top:0; bottom:0; border-radius:6px 0 0 6px;
+  transition:width .5s ease, background-color .5s ease;
+}
+.gauge .tick{position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--muted); opacity:.55}
+.gauge .labels{
+  position:relative; height:15px; margin-top:3px;
+  font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--muted);
+}
+.gauge .labels span{position:absolute; transform:translateX(-50%)}
+
+/* plant states: leaves droop + colors shift */
+.plant .leaf{transition:transform .9s ease, fill .9s ease; transform-box:fill-box}
+.plant .leaf.rt{transform-origin:0% 100%}
+.plant .leaf.lf{transform-origin:100% 100%}
+.plant .stem{transition:stroke .9s ease}
+.plant .bloom,.plant .fallen{transition:opacity .9s ease}
+.plant.s1 .leaf{fill:#4E9B5F}
+.plant.s1 .stem{stroke:#3E7C4F}
+.plant.s1 .bloom{opacity:1} .plant.s1 .fallen{opacity:0}
+.plant.s1 .foliage{animation:sway 5s ease-in-out infinite alternate; transform-origin:50% 100%; transform-box:fill-box}
+@keyframes sway{from{transform:rotate(-1.6deg)}to{transform:rotate(1.6deg)}}
+.plant.s2 .leaf{fill:#A3A054}
+.plant.s2 .stem{stroke:#8A8A46}
+.plant.s2 .bloom{opacity:0} .plant.s2 .fallen{opacity:0}
+.plant.s2 .leaf.rt{transform:rotate(33deg)}
+.plant.s2 .leaf.lf{transform:rotate(-33deg)}
+.plant.s2 .leaf.tp{transform:rotate(20deg)}
+.plant.s3 .leaf{fill:#8B6F4E}
+.plant.s3 .stem{stroke:#77603F}
+.plant.s3 .bloom{opacity:0} .plant.s3 .fallen{opacity:1}
+.plant.s3 .leaf.rt{transform:rotate(74deg)}
+.plant.s3 .leaf.lf{transform:rotate(-74deg)}
+.plant.s3 .leaf.tp{transform:rotate(52deg)}
+@media (prefers-reduced-motion:reduce){
+  .plant .leaf,.plant .stem,.plant .bloom,.plant .fallen,.gauge .fill{transition:none}
+  .plant.s1 .foliage{animation:none}
+}
+
+/* ---------- timeline ---------- */
+.tl-head{
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
+  gap:8px; padding:12px 14px;
+  border-bottom:1px solid var(--line);
+}
+.tl-head h2{padding:0}
+.legend{display:flex; flex-wrap:wrap; gap:10px; font-size:11.5px; color:var(--muted)}
+.legend i{
+  display:inline-block; width:10px; height:10px; border-radius:3px;
+  margin-right:4px; vertical-align:-1px;
+}
+.legend .k-hi i{background:var(--hi)} .legend .k-md i{background:var(--md)} .legend .k-lo i{background:var(--lo)}
+.legend .k-pv i{
+  background:repeating-linear-gradient(45deg,var(--surface2) 0 3px,var(--hatch) 3px 5px);
+  border:1px solid var(--line);
+}
+.tl-hint{font-size:12px; color:var(--muted); padding:9px 14px 0}
+.timeline{position:relative; display:flex; padding:12px 14px 16px}
+.hours{flex:0 0 52px; position:relative}
+.hours div{
+  position:absolute; right:10px; transform:translateY(-50%);
+  font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--muted);
+}
+.lanes{
+  position:relative; flex:1; border-radius:8px;
+  border:1px solid var(--line); background:var(--surface);
+  background-image:
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, transparent 22px, var(--surface2) 22px, var(--surface2) 23px, transparent 23px);
+  background-size:100% 44px, 100% 44px;
+  overflow:hidden;
+}
+.lanes.dropping{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+.lanes .empty-hint{
+  position:absolute; top:9px; left:0; right:0; text-align:center;
+  font-size:12.5px; color:var(--muted); pointer-events:none;
+}
+.blk{
+  position:absolute; border-radius:7px; padding:4px 8px 4px 11px;
+  border:1px solid var(--line); overflow:hidden; user-select:none;
+  cursor:grab; touch-action:none; z-index:2;
+}
+.blk::before{content:""; position:absolute; left:0; top:0; bottom:0; width:5px}
+.blk.d-high{background:var(--hi-bg)} .blk.d-high::before{background:var(--hi)}
+.blk.d-mid {background:var(--md-bg)} .blk.d-mid::before {background:var(--md)}
+.blk.d-low {background:var(--lo-bg)} .blk.d-low::before {background:var(--lo)}
+.blk.passive{
+  background-image:repeating-linear-gradient(45deg,transparent 0 6px,var(--hatch) 6px 10px);
+}
+.blk .nm{font-weight:700; font-size:12.5px; line-height:1.3; padding-right:20px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.blk .tm{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--muted); white-space:nowrap}
+.blk .tag{font-size:10px; color:var(--muted)}
+.blk.short{padding-top:2px; padding-bottom:2px}
+.blk.short .tm,.blk.short .tag{display:none}
+.blk.short .nm{font-size:11.5px}
+.blk.done{opacity:.5}
+.blk.done .nm{text-decoration:line-through}
+.blk .chk{
+  position:absolute; top:4px; right:4px; width:17px; height:17px;
+  border:1.5px solid var(--muted); border-radius:50%; background:var(--surface);
+  font-size:10px; line-height:1; color:transparent;
+}
+.blk .chk:hover{border-color:var(--accent)}
+.blk.done .chk{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.blk .rz{
+  position:absolute; left:0; right:0; bottom:0; height:9px; cursor:ns-resize;
+}
+.blk .rz::after{
+  content:""; position:absolute; left:50%; bottom:3px; transform:translateX(-50%);
+  width:26px; height:3px; border-radius:2px; background:var(--muted); opacity:0;
+}
+.blk:hover .rz::after{opacity:.6}
+.blk.cont{cursor:pointer; border-top:1px dashed var(--muted)}
+.blk.flows{border-bottom:1px dashed var(--muted)}
+.ghost{
+  position:absolute; border-radius:7px; z-index:3; pointer-events:none;
+  border:1.5px dashed var(--accent); background:var(--accent-soft); opacity:.85;
+  padding:3px 9px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink);
+}
+.nowline{position:absolute; left:0; right:0; height:0; border-top:2px solid var(--hi); z-index:4; pointer-events:none}
+.nowline::before{
+  content:""; position:absolute; left:-4px; top:-4px; width:7px; height:7px;
+  border-radius:50%; background:var(--hi);
+}
+
+/* ---------- dialog ---------- */
+.overlay{
+  position:fixed; inset:0; background:rgba(20,25,21,.45); z-index:100;
+  display:none; align-items:center; justify-content:center; padding:16px;
+}
+.overlay.open{display:flex}
+.dialog{
+  width:100%; max-width:330px; background:var(--surface); color:var(--ink);
+  border:1px solid var(--line); border-radius:14px; padding:16px 18px 18px;
+  box-shadow:var(--shadow);
+}
+.dialog h3{
+  margin:0 0 4px; font-family:'Gowun Batang',serif; font-size:17px; font-weight:700;
+  word-break:break-all;
+}
+.dialog .sub{font-size:12px; color:var(--muted); margin-bottom:12px}
+.dialog .row{margin-bottom:11px}
+.dialog label{font-size:12px; color:var(--muted); display:block; margin-bottom:3px}
+.dialog input[type="time"],.dialog input[type="date"],.dialog input[type="number"]{
+  width:100%; border:1px solid var(--line); border-radius:8px; background:var(--bg);
+  padding:7px 9px; font-family:'IBM Plex Mono',monospace;
+}
+.dialog .two{display:flex; gap:8px}
+.dialog .two>div{flex:1}
+.dialog .done-row{display:flex; align-items:center; gap:7px; font-size:13px}
+.dialog .done-row input{accent-color:var(--accent); width:15px; height:15px}
+.dialog .actions{display:flex; gap:8px; justify-content:flex-end; margin-top:14px}
+.dialog .actions .spacer{flex:1}
+
+.storage-warn{
+  margin:0 0 14px; padding:9px 13px; border-radius:9px; font-size:12.5px;
+  background:var(--md-bg); border:1px solid var(--md); display:none;
+}
+footer.credit{
+  margin-top:26px; text-align:center;
+  font-size:11.5px; color:var(--muted);
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="brand">
+    <div class="eyebrow">SY LAB SCHEDULER</div>
+    <h1>오늘의 화분</h1>
+  </div>
+  <div class="datenav">
+    <button class="nav" id="prevDay" aria-label="이전 날">◀</button>
+    <input type="date" id="datePick" aria-label="날짜 선택">
+    <span class="dow" id="dowLabel"></span>
+    <button class="nav" id="nextDay" aria-label="다음 날">▶</button>
+    <button class="today" id="goToday">오늘</button>
+  </div>
+</header>
+
+<p class="storage-warn" id="storageWarn">⚠ 이 브라우저에서는 저장이 지원되지 않아 새로고침하면 내용이 사라져요.</p>
+
+<div class="cols">
+
+  <!-- ============ palette ============ -->
+  <aside class="card palette" id="palette">
+    <h2>내 업무 박스</h2>
+    <div class="form">
+      <div class="editing-note" id="editingNote"></div>
+      <div>
+        <label for="fName">업무 이름</label>
+        <input type="text" id="fName" placeholder="예: Culture (배양)" maxlength="40">
+      </div>
+      <div>
+        <label>소요 시간</label>
+        <div class="dur-row">
+          <div><input type="number" id="fH" min="0" max="24" step="1" value="1" aria-label="시간"></div>
+          <div><input type="number" id="fM" min="0" max="59" step="5" value="0" aria-label="분"></div>
+        </div>
+        <label style="margin-top:2px">시간 / 분</label>
+      </div>
+      <div>
+        <label>난이도</label>
+        <div class="seg" id="fDiff" role="group" aria-label="난이도">
+          <button type="button" class="d-high" data-d="high" aria-pressed="false">상</button>
+          <button type="button" class="d-mid"  data-d="mid"  aria-pressed="true">중</button>
+          <button type="button" class="d-low"  data-d="low"  aria-pressed="false">하</button>
+        </div>
+      </div>
+      <div class="passive-row">
+        <input type="checkbox" id="fPassive">
+        <div>
+          <label for="fPassive" style="margin:0; color:var(--ink); font-size:13px">🔁 돌려놓기 (방치형)</label>
+          <div class="hint">Culture처럼 걸어두는 업무. 타임라인만 차지하고 식물 계산에서는 빠져요.</div>
+        </div>
+      </div>
+      <div class="form-err" id="fErr"></div>
+      <div class="form-actions">
+        <button class="btn primary" id="fSubmit">박스 추가</button>
+        <button class="btn ghost" id="fCancel" style="display:none">취소</button>
+      </div>
+    </div>
+    <div class="chips" id="chips"></div>
+    <p class="tip">박스를 타임라인에 <b>끌어다 놓거나</b>, 박스를 <b>클릭</b>해 시간을 지정해 배치하세요.</p>
+  </aside>
+
+  <!-- ============ main ============ -->
+  <main>
+    <section class="card plantcard" aria-live="polite">
+      <div class="art">
+        <svg class="plant s1" id="plantSvg" viewBox="0 0 200 180" role="img" aria-label="오늘의 식물 상태">
+          <g class="foliage">
+            <path class="stem" d="M100 128 C 100 95, 98 70, 100 42" fill="none" stroke-width="5" stroke-linecap="round"/>
+            <path class="leaf lf" d="M97 112 C 72 108, 58 94, 56 76 C 76 78, 94 92, 97 112 Z"/>
+            <path class="leaf rt" d="M103 112 C 128 108, 142 94, 144 76 C 124 78, 106 92, 103 112 Z"/>
+            <path class="leaf lf" d="M97 86 C 76 82, 64 68, 63 52 C 81 56, 95 68, 97 86 Z"/>
+            <path class="leaf rt" d="M103 86 C 124 82, 136 68, 137 52 C 119 56, 105 68, 103 86 Z"/>
+            <path class="leaf tp" d="M100 46 C 88 34, 88 18, 99 8 C 110 18, 111 34, 100 46 Z"/>
+            <g class="bloom">
+              <circle cx="120" cy="34" r="4.5" fill="#E8B4C8"/>
+              <circle cx="128" cy="30" r="4.5" fill="#E8B4C8"/>
+              <circle cx="126" cy="39" r="4.5" fill="#E8B4C8"/>
+              <circle cx="124.5" cy="34.5" r="3" fill="#F2D06B"/>
+            </g>
+          </g>
+          <path class="fallen" d="M138 138 C 148 132, 158 132, 164 136 C 156 142, 146 143, 138 138 Z" fill="#8B6F4E" opacity="0"/>
+          <path d="M74 130 L 126 130 L 119 172 L 81 172 Z" fill="#B9714A"/>
+          <rect x="70" y="124" width="60" height="10" rx="3" fill="#A05E3F"/>
+          <ellipse cx="100" cy="129" rx="24" ry="4" fill="#5C4633"/>
+        </svg>
+      </div>
+      <div class="info">
+        <div class="mood" id="moodLine"></div>
+        <div class="detail" id="moodDetail"></div>
+        <div class="gauge">
+          <div class="track">
+            <div class="fill" id="gaugeFill"></div>
+            <div class="tick" style="left:50%"></div>
+            <div class="tick" style="left:75%"></div>
+          </div>
+          <div class="labels">
+            <span style="left:50%">8h</span>
+            <span style="left:75%">12h</span>
+            <span style="left:100%">16h</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tl-head">
+        <h2>타임라인</h2>
+        <div class="legend">
+          <span class="k-hi"><i></i>상</span>
+          <span class="k-md"><i></i>중</span>
+          <span class="k-lo"><i></i>하</span>
+          <span class="k-pv"><i></i>돌려놓기</span>
+        </div>
+      </div>
+      <div class="tl-hint">블록을 끌어 옮기고, 아래 모서리를 끌어 시간을 조절하고, 클릭해서 정확한 시간을 입력할 수 있어요.</div>
+      <div class="timeline">
+        <div class="hours" id="hourCol"></div>
+        <div class="lanes" id="lanes"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="credit">하루 구속 시간 8시간 이하면 싱싱 🌱 · 8–12시간이면 살짝 시듦 · 12시간 이상이면 완전히 시듦 🥀</footer>
+</div>
+
+<!-- ============ dialogs ============ -->
+<div class="overlay" id="overlay">
+  <div class="dialog" role="dialog" aria-modal="true" id="dialogBox">
+    <h3 id="dlgTitle"></h3>
+    <div class="sub" id="dlgSub"></div>
+    <div id="dlgBody"></div>
+    <div class="actions" id="dlgActions"></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+(function(){
+
+/* ---------------- constants & state ---------------- */
+var MIN_H = 44;                 // px per hour
+var PXM = MIN_H / 60;           // px per minute
+var SNAP = 15;                  // drag snap (minutes); dialogs allow any minute
+var DAY = 1440;
+var KEY = 'sylab.scheduler.v1';
+var DOW = ['일','월','화','수','목','금','토'];
+var DIFF_LABEL = {high:'상', mid:'중', low:'하'};
+
+var S = { tasks: [], entries: {} };   // entries[dateKey] = [{id,name,diff,passive,start,dur,done}]
+var view = todayKey();
+var editingTaskId = null;
+var storageOK = true;
+
+/* ---------------- utils ---------------- */
+function uid(){ return 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function pad(n){ return (n<10?'0':'') + n; }
+function dateKeyOf(d){ return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
+function todayKey(){ return dateKeyOf(new Date()); }
+function parseKey(k){ var p = k.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+function shiftKey(k, days){ var d = parseKey(k); d.setDate(d.getDate()+days); return dateKeyOf(d); }
+function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+function snap(m){ return Math.round(m/SNAP)*SNAP; }
+function fmtHM(min){ min = ((min % DAY) + DAY) % DAY; return pad(Math.floor(min/60)) + ':' + pad(min%60); }
+function fmtDur(min){
+  var h = Math.floor(min/60), m = min%60;
+  return h && m ? h+'h '+m+'m' : h ? h+'h' : m+'m';
+}
+function fmtDurKo(min){
+  var h = Math.floor(min/60), m = min%60;
+  return (h ? h+'시간' : '') + (h && m ? ' ' : '') + (m || !h ? m+'분' : '');
+}
+function esc(s){ return s.replace(/[&<>"']/g, function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+/* ---------------- storage ---------------- */
+function save(){
+  if(!storageOK) return;
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch(e){ storageOK = false; document.getElementById('storageWarn').style.display = 'block'; }
+}
+function load(){
+  try{
+    var raw = localStorage.getItem(KEY);
+    if(raw){ var d = JSON.parse(raw); if(d && d.tasks && d.entries){ S = d; return; } }
+    seed();
+  }catch(e){
+    storageOK = false;
+    document.getElementById('storageWarn').style.display = 'block';
+    seed();
+  }
+}
+function seed(){
+  S.tasks = [
+    {id:uid(), name:'Culture (배양)', mins:960, diff:'mid', passive:true},
+    {id:uid(), name:'실험', mins:180, diff:'high', passive:false},
+    {id:uid(), name:'랩미팅 준비', mins:120, diff:'low', passive:false}
+  ];
+}
+
+/* ---------------- palette ---------------- */
+var formDiff = 'mid';
+var elChips = document.getElementById('chips');
+
+document.getElementById('fDiff').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b) return;
+  formDiff = b.dataset.d;
+  this.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', String(x===b)); });
+});
+
+function formError(msg){
+  var el = document.getElementById('fErr');
+  el.textContent = msg || '';
+  el.classList.toggle('show', !!msg);
+}
+function readForm(){
+  var name = document.getElementById('fName').value.trim();
+  var h = parseInt(document.getElementById('fH').value, 10) || 0;
+  var m = parseInt(document.getElementById('fM').value, 10) || 0;
+  var mins = clamp(h*60 + m, 0, DAY);
+  if(!name){ formError('업무 이름을 입력해 주세요.'); return null; }
+  if(mins < 5){ formError('소요 시간은 5분 이상이어야 해요.'); return null; }
+  formError('');
+  return { name:name, mins:mins, diff:formDiff, passive:document.getElementById('fPassive').checked };
+}
+function resetForm(){
+  editingTaskId = null;
+  formError('');
+  document.getElementById('palette').classList.remove('editing');
+  document.getElementById('fName').value = '';
+  document.getElementById('fH').value = 1;
+  document.getElementById('fM').value = 0;
+  document.getElementById('fPassive').checked = false;
+  setFormDiff('mid');
+  document.getElementById('fSubmit').textContent = '박스 추가';
+  document.getElementById('fCancel').style.display = 'none';
+}
+function setFormDiff(d){
+  formDiff = d;
+  document.querySelectorAll('#fDiff button').forEach(function(x){
+    x.setAttribute('aria-pressed', String(x.dataset.d === d));
+  });
+}
+
+document.getElementById('fSubmit').addEventListener('click', function(){
+  var v = readForm(); if(!v) return;
+  if(editingTaskId){
+    var t = S.tasks.find(function(x){ return x.id === editingTaskId; });
+    if(t){ t.name=v.name; t.mins=v.mins; t.diff=v.diff; t.passive=v.passive; }
+  }else{
+    S.tasks.push({ id:uid(), name:v.name, mins:v.mins, diff:v.diff, passive:v.passive });
+  }
+  save(); resetForm(); renderChips();
+});
+document.getElementById('fCancel').addEventListener('click', function(){ resetForm(); });
+
+function startEditTask(t){
+  editingTaskId = t.id;
+  document.getElementById('palette').classList.add('editing');
+  document.getElementById('editingNote').textContent = '박스 수정 중 — 이미 배치된 블록은 바뀌지 않아요';
+  document.getElementById('fName').value = t.name;
+  document.getElementById('fH').value = Math.floor(t.mins/60);
+  document.getElementById('fM').value = t.mins%60;
+  document.getElementById('fPassive').checked = t.passive;
+  setFormDiff(t.diff);
+  document.getElementById('fSubmit').textContent = '수정 저장';
+  document.getElementById('fCancel').style.display = '';
+  document.getElementById('fName').focus();
+}
+
+function renderChips(){
+  elChips.innerHTML = '';
+  if(!S.tasks.length){
+    var p = document.createElement('div');
+    p.className = 'empty';
+    p.textContent = '아직 업무 박스가 없어요. 위에서 만들어 보세요!';
+    elChips.appendChild(p);
+    return;
+  }
+  S.tasks.forEach(function(t){
+    var c = document.createElement('div');
+    c.className = 'chip d-' + t.diff;
+    c.draggable = true;
+    c.tabIndex = 0;
+    c.innerHTML =
+      '<div class="nm">' + esc(t.name) + '</div>' +
+      '<div class="meta">' + fmtDur(t.mins) + ' · ' + DIFF_LABEL[t.diff] +
+        (t.passive ? ' · <span class="pv">🔁 돌려놓기</span>' : '') + '</div>' +
+      '<div class="ops">' +
+        '<button title="수정" aria-label="수정">✎</button>' +
+        '<button title="삭제" aria-label="삭제">✕</button>' +
+      '</div>';
+    var ops = c.querySelectorAll('.ops button');
+    ops[0].addEventListener('click', function(e){ e.stopPropagation(); startEditTask(t); });
+    ops[1].addEventListener('click', function(e){
+      e.stopPropagation();
+      openDialog(t.name, '이 박스를 삭제할까요? 이미 배치된 블록은 그대로 남아 있어요.', '',
+        [
+          {cls:'ghost', label:'취소', fn:closeDialog},
+          'spacer',
+          {cls:'danger', label:'삭제', fn:function(){
+            S.tasks = S.tasks.filter(function(x){ return x.id !== t.id; });
+            if(editingTaskId === t.id) resetForm();
+            closeDialog(); save(); renderChips();
+          }}
+        ]);
+    });
+    c.addEventListener('dragstart', function(e){
+      e.dataTransfer.setData('text/plain', t.id);
+      e.dataTransfer.effectAllowed = 'copy';
+      dragTask = t;
+    });
+    c.addEventListener('dragend', function(){ dragTask = null; hideGhost(); });
+    c.addEventListener('click', function(){ openPlaceDialog(t); });
+    c.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPlaceDialog(t); }
+    });
+    elChips.appendChild(c);
+  });
+}
+
+/* ---------------- timeline rendering ---------------- */
+var elLanes = document.getElementById('lanes');
+var elHours = document.getElementById('hourCol');
+elLanes.style.height = (24*MIN_H) + 'px';
+elHours.style.height = (24*MIN_H) + 'px';
+for(var h = 0; h <= 24; h++){
+  var lab = document.createElement('div');
+  lab.style.top = (h*MIN_H) + 'px';
+  lab.textContent = pad(h%24) + ':00';
+  elHours.appendChild(lab);
+}
+
+// segments visible on a given day: that day's entries, clipped, plus
+// yesterday's blocks that run past midnight (rendered as continuations)
+function segsFor(dateKey){
+  var out = [];
+  (S.entries[dateKey] || []).forEach(function(e){
+    out.push({ e:e, day:dateKey, s:e.start, t:Math.min(e.start + e.dur, DAY),
+               flows:e.start + e.dur > DAY, cont:false });
+  });
+  var prev = shiftKey(dateKey, -1);
+  (S.entries[prev] || []).forEach(function(e){
+    if(e.start + e.dur > DAY){
+      out.push({ e:e, day:prev, s:0, t:Math.min(e.start + e.dur - DAY, DAY),
+                 flows:false, cont:true });
+    }
+  });
+  return out;
+}
+
+// side-by-side lanes for overlapping segments (calendar style)
+function layoutLanes(segs){
+  var sorted = segs.slice().sort(function(a,b){ return a.s - b.s || b.t - a.t; });
+  var cluster = [], clusterEnd = -1;
+  function flush(){
+    var lanes = [];
+    cluster.forEach(function(sg){
+      var li = 0;
+      while(li < lanes.length && lanes[li] > sg.s) li++;
+      lanes[li] = sg.t;
+      sg.lane = li;
+    });
+    cluster.forEach(function(sg){ sg.laneCount = lanes.length; });
+    cluster = [];
+  }
+  sorted.forEach(function(sg){
+    if(cluster.length && sg.s >= clusterEnd) flush();
+    cluster.push(sg);
+    clusterEnd = Math.max(clusterEnd, sg.t);
+  });
+  if(cluster.length) flush();
+  return sorted;
+}
+
+function renderDay(){
+  document.getElementById('datePick').value = view;
+  document.getElementById('dowLabel').textContent = '(' + DOW[parseKey(view).getDay()] + ')';
+
+  elLanes.querySelectorAll('.blk,.empty-hint,.nowline').forEach(function(n){ n.remove(); });
+
+  var segs = layoutLanes(segsFor(view));
+  if(!segs.length){
+    var hint = document.createElement('div');
+    hint.className = 'empty-hint';
+    hint.textContent = '왼쪽의 업무 박스를 이곳에 끌어다 놓아 보세요';
+    elLanes.appendChild(hint);
+  }
+  segs.forEach(function(sg){ elLanes.appendChild(buildBlock(sg)); });
+
+  if(view === todayKey()){
+    var nl = document.createElement('div');
+    nl.className = 'nowline';
+    var now = new Date();
+    nl.style.top = ((now.getHours()*60 + now.getMinutes()) * PXM) + 'px';
+    elLanes.appendChild(nl);
+  }
+  renderPlant();
+}
+
+function buildBlock(sg){
+  var e = sg.e;
+  var d = document.createElement('div');
+  d.className = 'blk d-' + e.diff + (e.passive ? ' passive' : '') +
+                (e.done ? ' done' : '') + (sg.cont ? ' cont' : '') + (sg.flows ? ' flows' : '');
+  var top = sg.s * PXM, hgt = (sg.t - sg.s) * PXM;
+  d.style.top = top + 'px';
+  d.style.height = Math.max(hgt, 14) + 'px';
+  var w = 100 / sg.laneCount;
+  d.style.left = 'calc(' + (sg.lane * w) + '% + 2px)';
+  d.style.width = 'calc(' + w + '% - 5px)';
+  if(hgt < 34) d.classList.add('short');
+
+  var timeTxt = sg.cont
+    ? '↑ 전날 ' + fmtHM(e.start) + ' – ' + fmtHM(e.start + e.dur) + ' · ' + fmtDur(e.dur)
+    : fmtHM(e.start) + ' – ' + fmtHM(e.start + e.dur) + (sg.flows ? ' (+1일)' : '') + ' · ' + fmtDur(e.dur);
+  d.innerHTML =
+    '<div class="nm">' + (e.passive ? '🔁 ' : '') + esc(e.name) + '</div>' +
+    '<div class="tm">' + timeTxt + '</div>' +
+    (sg.flows ? '<div class="tag">↓ 다음 날 계속</div>' : '') +
+    '<button class="chk" title="완료 체크" aria-label="완료 체크">✓</button>' +
+    (sg.cont ? '' : '<div class="rz" title="끌어서 시간 조절"></div>');
+
+  d.querySelector('.chk').addEventListener('click', function(ev){
+    ev.stopPropagation();
+    e.done = !e.done; save(); renderDay();
+  });
+  d.querySelector('.chk').addEventListener('pointerdown', function(ev){ ev.stopPropagation(); });
+
+  if(sg.cont){
+    d.addEventListener('click', function(){ openEditDialog(e, sg.day); });
+    return d;
+  }
+
+  // pointer drag: move (block body) / resize (bottom handle); <5px = click
+  var rz = d.querySelector('.rz');
+  rz.addEventListener('pointerdown', function(ev){ startDrag(ev, 'resize'); });
+  d.addEventListener('pointerdown', function(ev){
+    if(ev.target === rz || ev.button === 2) return;
+    startDrag(ev, 'move');
+  });
+
+  function startDrag(ev, mode){
+    ev.preventDefault(); ev.stopPropagation();
+    d.setPointerCapture(ev.pointerId);
+    var y0 = ev.clientY, s0 = e.start, dur0 = e.dur, moved = false;
+    function onMove(mv){
+      var dy = mv.clientY - y0;
+      if(Math.abs(dy) > 4) moved = true;
+      if(!moved) return;
+      var dmin = dy / PXM;
+      if(mode === 'move'){
+        e.start = clamp(snap(s0 + dmin), 0, DAY - SNAP);
+      }else{
+        e.dur = clamp(snap(dur0 + dmin), SNAP, DAY);
+      }
+      d.style.top = (e.start * PXM) + 'px';
+      d.style.height = Math.max((Math.min(e.start + e.dur, DAY) - e.start) * PXM, 14) + 'px';
+      d.querySelector('.tm').textContent =
+        fmtHM(e.start) + ' – ' + fmtHM(e.start + e.dur) +
+        (e.start + e.dur > DAY ? ' (+1일)' : '') + ' · ' + fmtDur(e.dur);
+    }
+    function onUp(uv){
+      d.releasePointerCapture(uv.pointerId);
+      d.removeEventListener('pointermove', onMove);
+      d.removeEventListener('pointerup', onUp);
+      d.removeEventListener('pointercancel', onUp);
+      if(moved){ save(); renderDay(); }
+      else if(uv.type === 'pointerup'){ openEditDialog(e, sg.day); }
+    }
+    d.addEventListener('pointermove', onMove);
+    d.addEventListener('pointerup', onUp);
+    d.addEventListener('pointercancel', onUp);
+  }
+  return d;
+}
+
+/* ---------------- drop from palette ---------------- */
+var dragTask = null;
+var ghost = null;
+function hideGhost(){ if(ghost){ ghost.remove(); ghost = null; } elLanes.classList.remove('dropping'); }
+function ghostStart(clientY, dur){
+  var r = elLanes.getBoundingClientRect();
+  return clamp(snap((clientY - r.top) / PXM), 0, DAY - SNAP);
+}
+elLanes.addEventListener('dragover', function(e){
+  if(!dragTask) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'copy';
+  elLanes.classList.add('dropping');
+  var st = ghostStart(e.clientY, dragTask.mins);
+  if(!ghost){ ghost = document.createElement('div'); ghost.className = 'ghost'; elLanes.appendChild(ghost); }
+  ghost.style.top = (st * PXM) + 'px';
+  ghost.style.height = ((Math.min(st + dragTask.mins, DAY) - st) * PXM) + 'px';
+  ghost.style.left = '2px'; ghost.style.right = '2px';
+  ghost.textContent = fmtHM(st) + ' – ' + fmtHM(st + dragTask.mins);
+});
+elLanes.addEventListener('dragleave', function(e){
+  if(!e.relatedTarget || !elLanes.contains(e.relatedTarget)) hideGhost();
+});
+elLanes.addEventListener('drop', function(e){
+  e.preventDefault();
+  var id = e.dataTransfer.getData('text/plain');
+  var t = dragTask || S.tasks.find(function(x){ return x.id === id; });
+  hideGhost();
+  if(!t) return;
+  addEntry(view, t, ghostStart(e.clientY, t.mins));
+});
+
+function addEntry(dateKey, t, start){
+  if(!S.entries[dateKey]) S.entries[dateKey] = [];
+  S.entries[dateKey].push({
+    id:uid(), name:t.name, diff:t.diff, passive:!!t.passive,
+    start:start, dur:t.mins, done:false
+  });
+  save(); renderDay();
+}
+
+/* ---------------- plant ---------------- */
+function unionLen(iv){
+  if(!iv.length) return 0;
+  iv.sort(function(a,b){ return a[0] - b[0]; });
+  var total = 0, cs = iv[0][0], ce = iv[0][1];
+  for(var i = 1; i < iv.length; i++){
+    if(iv[i][0] > ce){ total += ce - cs; cs = iv[i][0]; ce = iv[i][1]; }
+    else ce = Math.max(ce, iv[i][1]);
+  }
+  return total + (ce - cs);
+}
+function renderPlant(){
+  var act = [], pas = [];
+  segsFor(view).forEach(function(sg){
+    (sg.e.passive ? pas : act).push([sg.s, sg.t]);
+  });
+  var attended = unionLen(act);       // 겹치는 구간은 한 번만 — 실제 구속 시간
+  var passive = unionLen(pas);
+
+  var state, mood, cls, color;
+  if(attended <= 480){ state = 1; mood = '싱싱해요'; cls = 'st1'; color = 'var(--lo)'; }
+  else if(attended < 720){ state = 2; mood = '살짝 시들었어요…'; cls = 'st2'; color = 'var(--md)'; }
+  else { state = 3; mood = '완전히 시들었어요'; cls = 'st3'; color = 'var(--hi)'; }
+
+  var svg = document.getElementById('plantSvg');
+  svg.classList.remove('s1','s2','s3');
+  svg.classList.add('s' + state);
+
+  document.getElementById('moodLine').innerHTML = '<span class="' + cls + '">' + mood + '</span>';
+  var detail;
+  if(!attended && !passive){
+    detail = '아직 배정된 업무가 없어요.';
+  }else{
+    detail = '구속 <b>' + fmtDurKo(attended) + '</b>';
+    if(passive) detail += ' · 돌려놓기 ' + fmtDurKo(passive);
+    if(state === 1) detail += ' — 여유가 있어요.';
+    else if(state === 2) detail += ' — 슬슬 무리예요.';
+    else detail += ' — 오늘은 너무 많아요!';
+  }
+  document.getElementById('moodDetail').innerHTML = detail;
+
+  var fill = document.getElementById('gaugeFill');
+  fill.style.width = Math.min(attended / 960 * 100, 100) + '%';   // 16h scale
+  fill.style.backgroundColor = color;
+}
+
+/* ---------------- dialogs ---------------- */
+var overlay = document.getElementById('overlay');
+function openDialog(title, sub, bodyHTML, actions){
+  document.getElementById('dlgTitle').textContent = title;
+  document.getElementById('dlgSub').textContent = sub;
+  document.getElementById('dlgBody').innerHTML = bodyHTML;
+  var act = document.getElementById('dlgActions');
+  act.innerHTML = '';
+  actions.forEach(function(a){
+    if(a === 'spacer'){ var sp = document.createElement('div'); sp.className = 'spacer'; act.appendChild(sp); return; }
+    var b = document.createElement('button');
+    b.className = 'btn ' + a.cls; b.textContent = a.label;
+    b.addEventListener('click', a.fn);
+    act.appendChild(b);
+  });
+  overlay.classList.add('open');
+  var f = document.getElementById('dlgBody').querySelector('input');
+  if(f) f.focus();
+}
+function closeDialog(){ overlay.classList.remove('open'); }
+overlay.addEventListener('click', function(e){ if(e.target === overlay) closeDialog(); });
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape' && overlay.classList.contains('open')) closeDialog();
+});
+
+function openPlaceDialog(t){
+  openDialog(t.name,
+    fmtDur(t.mins) + ' · 난이도 ' + DIFF_LABEL[t.diff] + (t.passive ? ' · 🔁 돌려놓기' : ''),
+    '<div class="row"><label>날짜</label><input type="date" id="pDate" value="' + view + '"></div>' +
+    '<div class="row"><label>시작 시간</label><input type="time" id="pTime" value="09:00"></div>',
+    [
+      {cls:'ghost', label:'닫기', fn:closeDialog},
+      'spacer',
+      {cls:'primary', label:'배치하기', fn:function(){
+        var dk = document.getElementById('pDate').value || view;
+        var tv = document.getElementById('pTime').value || '09:00';
+        var p = tv.split(':');
+        closeDialog();
+        if(dk !== view){ view = dk; }
+        addEntry(dk, t, clamp((+p[0])*60 + (+p[1]), 0, DAY - 5));
+      }}
+    ]);
+}
+
+function openEditDialog(e, dayKey){
+  var subParts = [DIFF_LABEL[e.diff] ? '난이도 ' + DIFF_LABEL[e.diff] : ''];
+  if(e.passive) subParts.push('🔁 돌려놓기 — 식물 계산에서 제외');
+  if(dayKey !== view) subParts.push('시작일 ' + dayKey);
+  openDialog(e.name, subParts.filter(Boolean).join(' · '),
+    '<div class="row"><label>시작 시간</label><input type="time" id="eStart" value="' + fmtHM(e.start) + '"></div>' +
+    '<div class="row"><label>소요 시간</label><div class="two">' +
+      '<div><input type="number" id="eH" min="0" max="24" value="' + Math.floor(e.dur/60) + '" aria-label="시간"></div>' +
+      '<div><input type="number" id="eM" min="0" max="59" value="' + (e.dur%60) + '" aria-label="분"></div>' +
+    '</div><label style="margin-top:3px">시간 / 분</label></div>' +
+    '<div class="row done-row"><input type="checkbox" id="eDone"' + (e.done ? ' checked' : '') + '><label for="eDone" style="margin:0;color:var(--ink)">완료했어요</label></div>',
+    [
+      {cls:'danger', label:'삭제', fn:function(){
+        S.entries[dayKey] = (S.entries[dayKey] || []).filter(function(x){ return x.id !== e.id; });
+        if(!S.entries[dayKey].length) delete S.entries[dayKey];
+        closeDialog(); save(); renderDay();
+      }},
+      'spacer',
+      {cls:'ghost', label:'닫기', fn:closeDialog},
+      {cls:'primary', label:'저장', fn:function(){
+        var tv = document.getElementById('eStart').value;
+        var h = parseInt(document.getElementById('eH').value, 10) || 0;
+        var m = parseInt(document.getElementById('eM').value, 10) || 0;
+        var dur = clamp(h*60 + m, 5, DAY);
+        if(tv){ var p = tv.split(':'); e.start = clamp((+p[0])*60 + (+p[1]), 0, DAY - 5); }
+        e.dur = dur;
+        e.done = document.getElementById('eDone').checked;
+        closeDialog(); save(); renderDay();
+      }}
+    ]);
+}
+
+/* ---------------- date nav ---------------- */
+document.getElementById('prevDay').addEventListener('click', function(){ view = shiftKey(view, -1); renderDay(); });
+document.getElementById('nextDay').addEventListener('click', function(){ view = shiftKey(view, 1); renderDay(); });
+document.getElementById('goToday').addEventListener('click', function(){ view = todayKey(); renderDay(); });
+document.getElementById('datePick').addEventListener('change', function(){
+  if(this.value){ view = this.value; renderDay(); }
+});
+
+/* ---------------- boot ---------------- */
+load();
+renderChips();
+renderDay();
+setInterval(function(){
+  var nl = elLanes.querySelector('.nowline');
+  if(view === todayKey()){
+    if(!nl) return renderDay();
+    var now = new Date();
+    nl.style.top = ((now.getHours()*60 + now.getMinutes()) * PXM) + 'px';
+  }else if(nl){ nl.remove(); }
+}, 60000);
+
+})();
+</script>
+</body>
+</html>
