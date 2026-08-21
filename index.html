@@ -1801,7 +1801,9 @@ function renderMenu(){
       '<button class="btn ghost small" data-ex="html">HTML</button>' +
       '<button class="btn ghost small" data-ex="word">Word</button>' +
       '<button class="btn ghost small" data-ex="csv">CSV</button>' +
-      '<button class="btn ghost small" data-ex="pdf">PDF</button></div>';
+      '<button class="btn ghost small" data-ex="pdf">PDF</button>' +
+      '<button class="btn ghost small" data-ex="md">Markdown</button></div>' +
+      '<div class="mnote" style="margin-top:-4px">Markdown(.md)은 Notion에서 가져오기(Import)하면 표까지 그대로 들어가요.</div>';
     keys.forEach(function(k){
       var a = S.archive[k];
       html += '<div class="arow" data-k="' + k + '"><div class="sum">' +
@@ -1895,6 +1897,37 @@ function buildCSV(){
   });
   return '﻿' + lines.join('\r\n');
 }
+// Notion 가져오기용: 날짜별 헤딩 + GFM 표 (Notion Import > Text & Markdown)
+function buildMarkdown(){
+  var owner = S.owner ? S.owner + '님의 ' : '';
+  var lines = ['# 🪴 오늘의 화분 — ' + owner + '보관 기록', '', '내보낸 날짜: ' + fmtKeyShort(todayKey()), ''];
+  function cell(v){ return String(v == null ? '' : v).replace(/\|/g, '\\|').replace(/\r?\n/g, ' '); }
+  Object.keys(S.archive).sort().forEach(function(k){
+    var a = S.archive[k];
+    lines.push('## ' + fmtKeyShort(k));
+    lines.push('');
+    lines.push('**전업 ' + fmtDurKo(a.attended) + '**' +
+      (a.passiveMin ? ' · 돌려놓기 ' + fmtDurKo(a.passiveMin) : '') +
+      ' · 식물 상태: ' + STATE_LABEL[a.state]);
+    lines.push('');
+    if(a.entries.length){
+      lines.push('| 시간 | 업무 | 난이도 | 장소 | 설명 | 완료 |');
+      lines.push('| --- | --- | --- | --- | --- | --- |');
+      a.entries.slice().sort(function(x, y){ return x.start - y.start; }).forEach(function(e){
+        lines.push('| ' + fmtHM(e.start) + ' – ' + fmtHM(e.start + e.dur) +
+          ' | ' + cell(e.name) + (e.passive ? ' 🔁' : '') +
+          ' | ' + DIFF_LABEL[e.diff] +
+          ' | ' + cell(e.loc) +
+          ' | ' + cell(e.desc) +
+          ' | ' + (e.done ? '✅' : '') + ' |');
+      });
+    }else{
+      lines.push('기록 없음');
+    }
+    lines.push('');
+  });
+  return lines.join('\n');
+}
 function download(filename, mime, content){
   try{
     var blob = new Blob([content], {type: mime});
@@ -1909,7 +1942,8 @@ function download(filename, mime, content){
 function exportArchive(kind){
   if(!Object.keys(S.archive).length) return;
   var stamp = todayKey();
-  if(kind === 'csv'){ download('plant-log-' + stamp + '.csv', 'text/csv;charset=utf-8', buildCSV()); }
+  if(kind === 'md'){ download('plant-log-' + stamp + '.md', 'text/markdown;charset=utf-8', buildMarkdown()); }
+  else if(kind === 'csv'){ download('plant-log-' + stamp + '.csv', 'text/csv;charset=utf-8', buildCSV()); }
   else if(kind === 'html'){ download('plant-log-' + stamp + '.html', 'text/html;charset=utf-8', buildReportHTML()); }
   else if(kind === 'word'){ download('plant-log-' + stamp + '.doc', 'application/msword;charset=utf-8', buildReportHTML()); }
   else if(kind === 'pdf'){
